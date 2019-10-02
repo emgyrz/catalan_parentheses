@@ -9,5 +9,5 @@ go run algorithm1.go N
 #
 rustc -C opt-level=3 algorithm2.rs && ./algorithm2 N
 #
-g++ algorithm3.cpp && ./a.out N
+g++ -O3 algorithm3.cpp && ./a.out N
 ```
