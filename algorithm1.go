@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
-	// "strings"
-	"time"
 	"os"
 	"strconv"
+	"time"
 )
 
-var closingBrackets string
+var closingBrackets []byte
 
 func main() {
 	count, err := strconv.Atoi(os.Args[1])
@@ -21,35 +20,34 @@ func main() {
 
 	fmt.Println("time", t)
 	fmt.Println("variants", len(variants))
-	// fmt.Println(len(variants), strings.Join(variants, " , "))
 }
-
 
 func brackets(n int) []string {
 	if n < 1 {
 		return nil
 	}
-	closingBrackets = ""
+	closingBrackets = nil
 	for i := 0; i < n; i++ {
-		closingBrackets += ")"
+		closingBrackets = append(closingBrackets, ')')
 	}
 	store := make([]string, 0)
-	br(n-1, n, "(", &store)
+	br(n-1, n, []byte{'('}, &store)
 
 	return store
 }
 
-func br(n, cl int, left string, store *[]string) {
+func br(n, cl int, left []byte, store *[]string) {
 	if n == 0 {
-		*store = append(*store, left+getClosing(cl))
+		*store = append(*store, string(append(left, getClosing(cl)...)))
 		return
 	}
-	br(n-1, cl, left+"(", store)
+	br(n-1, cl, append(left, '('), store)
 	for i := 0; i < cl-n; i++ {
-		br(n-1, cl-i-1, left+getClosing(i+1)+"(", store)
+		l := append(left, getClosing(i+1)...)
+		br(n-1, cl-i-1, append(l, '('), store)
 	}
 }
 
-func getClosing(n int) string {
+func getClosing(n int) []byte {
 	return closingBrackets[:n]
 }
