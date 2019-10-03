@@ -8,6 +8,7 @@ import (
 )
 
 var closingBrackets []byte
+var store []byte
 
 func main() {
 	count, err := strconv.Atoi(os.Args[1])
@@ -30,21 +31,26 @@ func brackets(n int) []string {
 	for i := 0; i < n; i++ {
 		closingBrackets = append(closingBrackets, ')')
 	}
-	store := make([]string, 0)
-	br(n-1, n, []byte{'('}, &store)
+	//debug.SetGCPercent(-1)
+	store = make([]byte, 0)
+	br(n-1, n, []byte{'('})
+	variants := make([]string, len(store)/n/2)
+	for i := 0; i < len(store)/n/2; i++ {
+		variants[i] = string(store[i*n*2 : i*n*2+n*2])
+	}
 
-	return store
+	return variants
 }
 
-func br(n, cl int, left []byte, store *[]string) {
+func br(n, cl int, left []byte) {
 	if n == 0 {
-		*store = append(*store, string(append(left, getClosing(cl)...)))
+		store = append(store, append(left, getClosing(cl)...)...)
 		return
 	}
-	br(n-1, cl, append(left, '('), store)
+	br(n-1, cl, append(left, '('))
 	for i := 0; i < cl-n; i++ {
 		l := append(left, getClosing(i+1)...)
-		br(n-1, cl-i-1, append(l, '('), store)
+		br(n-1, cl-i-1, append(l, '('))
 	}
 }
 
